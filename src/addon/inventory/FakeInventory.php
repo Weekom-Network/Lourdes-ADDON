@@ -67,22 +67,30 @@ abstract class FakeInventory extends ContainerInventory
                             $ev = new PlayerDropItemEvent($who, $action->newItem->getItemStack());
                             $ev->call();
 
-                            if ($ev->isCancelled())
+                            if ($ev->isCancelled()) {
                                 $tmp->setItem($action->inventorySlot, $action->newItem->getItemStack());
-                            else
+                                var_dump($action->newItem->getItemStack()->getName());
+                            } else
                                 $who->dropItem($action->newItem->getItemStack());
                         }
                         break;
 
                     case NetworkInventoryAction::SOURCE_CONTAINER:
                         $adjustedSlot = $action->inventorySlot - $this->getFirstVirtualSlot();
-                        $ev = new InventoryTransactionEvent(new InventoryTransaction($who, [new SlotChangeAction($who->getWindow($action->windowId), $action->inventorySlot, $action->oldItem->getItemStack(), $action->newItem->getItemStack()), new SlotChangeAction($tmp, $adjustedSlot, $action->oldItem->getItemStack(), $action->newItem->getItemStack())]));
-                        $ev->call();
+                        
+                        # Transaction
+                        $transaction = new InventoryTransaction($who);
+                        $transaction->addAction(new SlotChangeAction($who->getWindow($action->windowId), $action->inventorySlot, $action->oldItem->getItemStack(), $action->newItem->getItemStack()));
+                        $transaction->addAction(new SlotChangeAction($tmp, $adjustedSlot, $action->oldItem->getItemStack(), $action->newItem->getItemStack()));
 
-                        if ($action->windowId === ContainerIds::UI && in_array($action->inventorySlot, $this->getVirtualSlots(), true))
-                            $tmp->setItem($adjustedSlot, $ev->isCancelled() ? $action->oldItem->getItemStack() : $action->newItem->getItemStack());
+                        # Event
+                        $event = new InventoryTransactionEvent($transaction);
+                        $event->call();
+
+                        if ($action->windowId == ContainerIds::UI && in_array($action->inventorySlot, $this->getVirtualSlots(), true))
+                            $tmp->setItem($adjustedSlot, ($event->isCancelled() ? $action->oldItem->getItemStack() : $action->newItem->getItemStack()));
                         else
-                            $who->getWindow($action->windowId)->setItem($action->inventorySlot, $ev->isCancelled() ? $action->oldItem->getItemStack() : $action->newItem->getItemStack());
+                            $who->getWindow($action->windowId)->setItem($action->inventorySlot, ($event->isCancelled() ? $action->oldItem->getItemStack() : $action->newItem->getItemStack()));
                         break;
                 }
             }
