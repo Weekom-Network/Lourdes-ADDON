@@ -1,5 +1,5 @@
 name: Addon
-version: 1.4
+version: 1.5
 main: addon\AddonLoader
 api: 3.0.0
 loadbefore: 'UHC'
