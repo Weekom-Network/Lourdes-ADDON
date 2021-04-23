@@ -1,0 +1,5 @@
+rcon-server:
+  address: '45.134.8.81'
+  password: 'RUlz5uBTdR'
+  port: 19132
+  timeout: 2
