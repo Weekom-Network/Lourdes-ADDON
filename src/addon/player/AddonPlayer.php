@@ -217,42 +217,9 @@ class AddonPlayer extends Player
     {
         $sound = $packet->sound;
 
-        if (in_array($sound, [41, 42, 43])) {
+        if (in_array($sound, [41, 42, 43]))
             return false;
-        }
         return parent::handleLevelSoundEvent($packet);
-    }
-
-
-
-    /**
-     * @param bool $strval
-     * @return int|string
-     */
-    public function getDeviceOS(bool $strval = false)
-    {
-        $osVal = intval($this->playerData['DeviceOS']);
-        $result = $strval ? 'Unknown' : $osVal;
-
-        if ($strval == true and isset($this->deviceOSVals[$osVal])) {
-            $result = strval($this->deviceOSVals[$osVal]);
-        }
-        return $result;
-    }
-
-    /**
-     * @param bool $strval
-     * @return int|string
-     */
-    public function getInput(bool $strval = false)
-    {
-        $input = intval($this->playerData['CurrentInputMode']);
-        $result = ($strval == true) ? 'Unknown' : $input;
-
-        if ($strval == true and isset($this->inputVals[$input])) {
-            $result = strval($this->inputVals[$input]);
-        }
-        return $result;
     }
 
     /**
@@ -289,6 +256,36 @@ class AddonPlayer extends Player
 
             $this->setMotion($motion);
         }
+    }
+
+    /**
+     * @param bool $strval
+     * @return int|string
+     */
+    public function getDeviceOS(bool $strval = false)
+    {
+        $osVal = intval($this->playerData['DeviceOS']);
+        $result = $strval ? 'Unknown' : $osVal;
+
+        if ($strval == true and isset($this->deviceOSVals[$osVal])) {
+            $result = strval($this->deviceOSVals[$osVal]);
+        }
+        return $result;
+    }
+
+    /**
+     * @param bool $strval
+     * @return int|string
+     */
+    public function getInput(bool $strval = false)
+    {
+        $input = intval($this->playerData['CurrentInputMode']);
+        $result = ($strval == true) ? 'Unknown' : $input;
+
+        if ($strval == true and isset($this->inputVals[$input])) {
+            $result = strval($this->inputVals[$input]);
+        }
+        return $result;
     }
 
     /**
