@@ -7,6 +7,7 @@ namespace addon\player;
 use addon\AddonLoader;
 use addon\entity\FishingHook;
 use addon\scoreboard\Scoreboard;
+use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityIds;
 use pocketmine\event\entity\ProjectileLaunchEvent;
@@ -222,6 +223,8 @@ class AddonPlayer extends Player
         return parent::handleLevelSoundEvent($packet);
     }
 
+
+
     /**
      * @param bool $strval
      * @return int|string
@@ -250,6 +253,42 @@ class AddonPlayer extends Player
             $result = strval($this->inputVals[$input]);
         }
         return $result;
+    }
+
+    /**
+     * @param Entity $attacker
+     * @param float $damage
+     * @param float $x
+     * @param float $z
+     * @param float $base
+     */
+    public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4): void
+    {
+        $xzKb = $base * 1 / 2.25;
+        $yKb = $base * 1 / 1.75;
+
+        $f = sqrt($x * $x + $z * $z);
+        if($f <= 0){
+            return;
+        }
+        if(mt_rand() / mt_getrandmax() > $this->getAttributeMap()->getAttribute(Attribute::KNOCKBACK_RESISTANCE)->getValue()){
+            $f = 1 / $f;
+
+            $motion = clone $this->motion;
+
+            $motion->x /= 2;
+            $motion->y /= 2;
+            $motion->z /= 2;
+            $motion->x += $x * $f * $xzKb;
+            $motion->y += $yKb;
+            $motion->z += $z * $f * $xzKb;
+
+            if($motion->y > $base){
+                $motion->y = $base;
+            }
+
+            $this->setMotion($motion);
+        }
     }
 
     /**
