@@ -52,7 +52,7 @@ class FishingHook extends Projectile
 
         if ($this->getOwningEntity() === null) {
             $this->flagForDespawn();
-            return;
+            return false;
         }
         $this->timings->startTiming();
         $update = parent::onUpdate($currentTick);
